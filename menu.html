@@ -1,55 +1,475 @@
-<DOCTYPE.html>
-<html lang="pt-br">
-    <head>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" href="reset.css/reset.css">
-        <link rel="stylesheet" href="menu.css">
-        <title>Cardapio</title>
-    </head>
+<!doctype html>
+<html lang="pt-BR" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xcompras</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Outfit', sans-serif; }
+    .product-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .product-card:hover { transform: translateY(-8px); }
+    .btn-cart { transition: all 0.2s ease; }
+    .btn-cart:hover { transform: scale(1.05); }
+    .cart-badge { animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(100%); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .cart-panel { animation: slideIn 0.3s ease-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+    .fade-in-delay-1 { animation-delay: 0.1s; opacity: 0; }
+    .fade-in-delay-2 { animation-delay: 0.2s; opacity: 0; }
+    .fade-in-delay-3 { animation-delay: 0.3s; opacity: 0; }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full bg-gradient-to-br from-slate-50 to-slate-100">
+  <div id="app" class="h-full w-full overflow-auto">
+   <!-- Promo Banner -->
+   <div id="promo-banner" class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-center py-2 px-4 text-sm font-medium">
+    🚚 Frete grátis em compras acima de R$99 | Use o cupom XCOMPRAS10
+   </div><!-- Header -->
+   <header class="bg-white shadow-sm sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+     <div class="flex items-center justify-between">
+      <!-- Logo -->
+      <div class="flex items-center gap-2">
+       <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+        <span class="text-white font-bold text-xl">X</span>
+       </div><span id="store-name" class="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Xcompras</span>
+      </div><!-- Search Bar -->
+      <div class="hidden md:flex flex-1 max-w-xl mx-8">
+       <div class="relative w-full">
+        <input type="text" id="search-input" placeholder="Buscar produtos..." class="w-full px-4 py-2.5 pl-11 bg-slate-100 rounded-full border-2 border-transparent focus:border-emerald-500 focus:bg-white outline-none transition-all">
+        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+       </div>
+      </div><!-- Cart Button --> <button id="cart-btn" class="relative p-3 bg-slate-100 hover:bg-emerald-100 rounded-full transition-colors">
+       <svg class="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+       </svg><span id="cart-count" class="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 text-white text-xs font-bold rounded-full flex items-center justify-center cart-badge hidden">0</span> </button>
+     </div>
+    </div>
+   </header><!-- Hero Section -->
+   <section class="bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 text-white py-16 px-4">
+    <div class="max-w-7xl mx-auto text-center">
+     <h1 id="hero-title" class="text-4xl md:text-5xl font-bold mb-4 fade-in">Ofertas Imperdíveis</h1>
+     <p id="hero-subtitle" class="text-xl text-emerald-100 mb-8 fade-in fade-in-delay-1">Até 50% de desconto em produtos selecionados</p>
+     <div class="flex flex-wrap justify-center gap-4 fade-in fade-in-delay-2">
+      <button class="px-8 py-3 bg-white text-emerald-600 font-semibold rounded-full hover:bg-emerald-50 transition-colors"> Ver Ofertas </button> <button class="px-8 py-3 bg-emerald-700 text-white font-semibold rounded-full hover:bg-emerald-800 transition-colors"> Novidades </button>
+     </div>
+    </div>
+   </section><!-- Categories -->
+   <section class="py-8 px-4 bg-white">
+    <div class="max-w-7xl mx-auto">
+     <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+      <button class="category-btn px-6 py-2 bg-emerald-500 text-white rounded-full font-medium whitespace-nowrap" data-category="all">Todos</button> <button class="category-btn px-6 py-2 bg-slate-100 text-slate-700 rounded-full font-medium whitespace-nowrap hover:bg-slate-200" data-category="eletronicos">📱 Eletrônicos</button> <button class="category-btn px-6 py-2 bg-slate-100 text-slate-700 rounded-full font-medium whitespace-nowrap hover:bg-slate-200" data-category="moda">👕 Moda</button> <button class="category-btn px-6 py-2 bg-slate-100 text-slate-700 rounded-full font-medium whitespace-nowrap hover:bg-slate-200" data-category="casa">🏠 Casa</button> <button class="category-btn px-6 py-2 bg-slate-100 text-slate-700 rounded-full font-medium whitespace-nowrap hover:bg-slate-200" data-category="esportes">⚽ Esportes</button>
+     </div>
+    </div>
+   </section><!-- Products Grid -->
+   <section class="py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+     <h2 class="text-2xl font-bold text-slate-800 mb-8">Produtos em Destaque</h2>
+     <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <!-- Products will be rendered here -->
+     </div>
+    </div>
+   </section><!-- Cart Overlay -->
+   <div id="cart-overlay" class="fixed inset-0 bg-black/50 z-50 hidden">
+    <div id="cart-panel" class="cart-panel absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl">
+     <div class="flex flex-col h-full">
+      <!-- Cart Header -->
+      <div class="flex items-center justify-between p-6 border-b">
+       <h2 class="text-xl font-bold text-slate-800">Carrinho</h2><button id="close-cart" class="p-2 hover:bg-slate-100 rounded-full transition-colors">
+        <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg></button>
+      </div><!-- Cart Items -->
+      <div id="cart-items" class="flex-1 overflow-auto p-6">
+       <div id="empty-cart" class="text-center py-12">
+        <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+         <svg class="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+         </svg>
+        </div>
+        <p class="text-slate-500">Seu carrinho está vazio</p>
+       </div>
+       <div id="cart-items-list" class="space-y-4"></div>
+      </div><!-- Cart Footer -->
+      <div id="cart-footer" class="border-t p-6 hidden">
+       <div class="flex justify-between items-center mb-4">
+        <span class="text-slate-600">Subtotal</span> <span id="cart-subtotal" class="text-xl font-bold text-slate-800">R$ 0,00</span>
+       </div><button id="checkout-btn" class="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all"> Finalizar Compra </button>
+       <p class="text-center text-sm text-slate-500 mt-3">🔒 Pagamento 100% seguro</p>
+      </div>
+     </div>
+    </div>
+   </div><!-- Toast Notification -->
+   <div id="toast" class="fixed bottom-4 right-4 bg-slate-800 text-white px-6 py-3 rounded-xl shadow-lg transform translate-y-20 opacity-0 transition-all z-50">
+    <span id="toast-message">Produto adicionado!</span>
+   </div>
+  </div>
+  <script>
+    // Reference products data
+    const products = [
+      { id: 'p1', name: 'Fone Bluetooth Pro', price: 1.99, originalPrice: 2.99, category: 'eletronicos', emoji: '🎧', rating: 4.8, reviews: 234 },
+      { id: 'p2', name: 'Smartwatch Fitness', price: 1.49, originalPrice: 1.99, category: 'eletronicos', emoji: '⌚', rating: 4.6, reviews: 189 },
+      { id: 'p3', name: 'Camiseta Premium', price: 0.89, originalPrice: 1.29, category: 'moda', emoji: '👕', rating: 4.9, reviews: 456 },
+      { id: 'p4', name: 'Tênis Esportivo', price: 2.49, originalPrice: 3.49, category: 'esportes', emoji: '👟', rating: 4.7, reviews: 312 },
+      { id: 'p5', name: 'Luminária LED', price: 1.59, originalPrice: 1.99, category: 'casa', emoji: '💡', rating: 4.5, reviews: 98 },
+      { id: 'p6', name: 'Mochila Urbana', price: 1.99, originalPrice: 2.59, category: 'moda', emoji: '🎒', rating: 4.8, reviews: 267 },
+      { id: 'p7', name: 'Caixa de Som', price: 2.49, originalPrice: 3.29, category: 'eletronicos', emoji: '🔊', rating: 4.6, reviews: 178 },
+      { id: 'p8', name: 'Kit Yoga Completo', price: 1.89, originalPrice: 2.49, category: 'esportes', emoji: '🧘', rating: 4.9, reviews: 145 },
+    ];
 
-    <body>
-        <header>
-            <div class="caixa">
-                <h1><img src="shadow.jpg"></h1>
+    // State
+    let cartItems = [];
+    let currentCategory = 'all';
+    let searchTerm = '';
 
-                <nav>
-                    <ul>
-                        <li><a href="cafe.html">inicio</a></li>
-                        <li><a href="menu.html">cardapio</a></li>
-                        <li><a href="contato.html">contato</a></li>
-                    </ul>
-                </nav>
+    // Default config
+    const defaultConfig = {
+      store_name: 'Xcompras',
+      hero_title: 'Ofertas Imperdíveis',
+      hero_subtitle: 'Até 50% de desconto em produtos selecionados',
+      promo_text: '🚚 Frete grátis em compras acima de R$99 | Use o cupom XCOMPRAS10',
+      background_color: '#f8fafc',
+      surface_color: '#ffffff',
+      text_color: '#1e293b',
+      primary_color: '#10b981',
+      secondary_color: '#0d9488',
+      font_family: 'Outfit',
+      font_size: 16
+    };
+
+    // SDK initialization
+    async function initApp() {
+      // Initialize Element SDK
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (config) => {
+            applyConfig(config);
+          },
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              { get: () => config.background_color || defaultConfig.background_color, set: (v) => window.elementSdk.setConfig({ background_color: v }) },
+              { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => window.elementSdk.setConfig({ surface_color: v }) },
+              { get: () => config.text_color || defaultConfig.text_color, set: (v) => window.elementSdk.setConfig({ text_color: v }) },
+              { get: () => config.primary_color || defaultConfig.primary_color, set: (v) => window.elementSdk.setConfig({ primary_color: v }) },
+              { get: () => config.secondary_color || defaultConfig.secondary_color, set: (v) => window.elementSdk.setConfig({ secondary_color: v }) }
+            ],
+            borderables: [],
+            fontEditable: { get: () => config.font_family || defaultConfig.font_family, set: (v) => window.elementSdk.setConfig({ font_family: v }) },
+            fontSizeable: { get: () => config.font_size || defaultConfig.font_size, set: (v) => window.elementSdk.setConfig({ font_size: v }) }
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ['store_name', config.store_name || defaultConfig.store_name],
+            ['hero_title', config.hero_title || defaultConfig.hero_title],
+            ['hero_subtitle', config.hero_subtitle || defaultConfig.hero_subtitle],
+            ['promo_text', config.promo_text || defaultConfig.promo_text]
+          ])
+        });
+      }
+
+      // Initialize Data SDK
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init({
+          onDataChanged: (data) => {
+            cartItems = data;
+            updateCartUI();
+          }
+        });
+        if (!result.isOk) {
+          console.error('Failed to init Data SDK');
+        }
+      }
+
+      // Initial render
+      applyConfig(window.elementSdk?.config || defaultConfig);
+      renderProducts();
+      setupEventListeners();
+    }
+
+    function applyConfig(config) {
+      const c = { ...defaultConfig, ...config };
+     
+      // Apply text content
+      document.getElementById('store-name').textContent = c.store_name;
+      document.getElementById('hero-title').textContent = c.hero_title;
+      document.getElementById('hero-subtitle').textContent = c.hero_subtitle;
+      document.getElementById('promo-banner').innerHTML = c.promo_text;
+
+      // Apply colors
+      document.body.style.background = `linear-gradient(to bottom right, ${c.background_color}, ${adjustColor(c.background_color, -10)})`;
+     
+      document.querySelectorAll('.bg-white, header, .cart-panel').forEach(el => {
+        el.style.backgroundColor = c.surface_color;
+      });
+
+      document.querySelectorAll('h1, h2, .text-slate-800').forEach(el => {
+        el.style.color = c.text_color;
+      });
+
+      // Primary color for buttons and accents
+      const primaryGradient = `linear-gradient(to right, ${c.primary_color}, ${c.secondary_color})`;
+      document.getElementById('promo-banner').style.background = primaryGradient;
+      document.querySelector('section.bg-gradient-to-br').style.background = `linear-gradient(to bottom right, ${c.primary_color}, ${c.secondary_color}, ${adjustColor(c.secondary_color, 20)})`;
+
+      // Apply fonts
+      const fontStack = `${c.font_family}, sans-serif`;
+      document.body.style.fontFamily = fontStack;
+
+      const baseSize = c.font_size;
+      document.getElementById('hero-title').style.fontSize = `${baseSize * 2.5}px`;
+      document.getElementById('hero-subtitle').style.fontSize = `${baseSize * 1.25}px`;
+      document.getElementById('store-name').style.fontSize = `${baseSize * 1.5}px`;
+    }
+
+    function adjustColor(hex, amount) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      const r = Math.min(255, Math.max(0, (num >> 16) + amount));
+      const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
+      const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
+      return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('products-grid');
+      const filteredProducts = products.filter(p => {
+        const matchesCategory = currentCategory === 'all' || p.category === currentCategory;
+        const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesCategory && matchesSearch;
+      });
+
+      grid.innerHTML = filteredProducts.map((product, index) => {
+        const discount = Math.round((1 - product.price / product.originalPrice) * 100);
+        const inCart = cartItems.find(item => item.product_id === product.id);
+       
+        return `
+          <div class="product-card bg-white rounded-2xl shadow-sm overflow-hidden fade-in" style="animation-delay: ${index * 0.1}s">
+            <div class="relative">
+              <div class="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+                <span class="text-7xl">${product.emoji}</span>
+              </div>
+              <span class="absolute top-3 left-3 px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full">-${discount}%</span>
+              ${inCart ? `<span class="absolute top-3 right-3 px-3 py-1 bg-emerald-500 text-white text-xs font-bold rounded-full">No carrinho</span>` : ''}
             </div>
-        </header>
+            <div class="p-4">
+              <div class="flex items-center gap-1 mb-2">
+                <span class="text-yellow-400">★</span>
+                <span class="text-sm font-medium text-slate-700">${product.rating}</span>
+                <span class="text-sm text-slate-400">(${product.reviews})</span>
+              </div>
+              <h3 class="font-semibold text-slate-800 mb-2">${product.name}</h3>
+              <div class="flex items-center gap-2 mb-4">
+                <span class="text-xl font-bold text-emerald-600">R$ ${product.price.toFixed(2).replace('.', ',')}</span>
+                <span class="text-sm text-slate-400 line-through">R$ ${product.originalPrice.toFixed(2).replace('.', ',')}</span>
+              </div>
+              <button onclick="addToCart('${product.id}')" class="btn-cart w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-teal-700">
+                ${inCart ? 'Adicionar +1' : 'Adicionar ao Carrinho'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
 
-        <main>
-            <ul class="produtos">
-                <li>
-                    <h2>Coca Cola 2L</h2>
-                    <img src="sonic.jpg">
-                    <p class="descricao">refrigerante muito bom, recomendamos 100%</p>
-                    <p class="preco">R$ 12,00</p>
-                </li>
+    async function addToCart(productId) {
+      if (cartItems.length >= 999) {
+        showToast('Limite do carrinho atingido!');
+        return;
+      }
 
-                <li>
-                    <h2>Salgadinho Doritos</h2>
-                    <img src="sonic.jpg">
-                    <p class="descricao">UM ótimo lanche para se comer a tarde!</p>
-                    <p class="preco">R$ 9,00</p>
-                </li>
+      const existingItem = cartItems.find(item => item.product_id === productId);
+     
+      if (existingItem) {
+        const result = await window.dataSdk.update({
+          ...existingItem,
+          quantity: existingItem.quantity + 1
+        });
+        if (!result.isOk) {
+          showToast('Erro ao atualizar carrinho');
+          return;
+        }
+      } else {
+        const result = await window.dataSdk.create({
+          product_id: productId,
+          quantity: 1,
+          added_at: new Date().toISOString()
+        });
+        if (!result.isOk) {
+          showToast('Erro ao adicionar ao carrinho');
+          return;
+        }
+      }
 
-                <li>
-                    <h2>Fone Bluetooth</h2>
-                    <img src="sonic.jpg">
-                    <p class="descricao">A melhor coisa para poder escutsr suas músicas favoritas</p>
-                    <p class="preco">R$ 170,00</p>
-                </li>
-            </ul>
-        </main>
+      showToast('Produto adicionado! 🛒');
+      renderProducts();
+    }
 
-        <footer>
-            <img src="logo-removebg-preview.png">
-            <p>All Rights Reserved 2026</p>
-        </footer>
-    </body>
+    async function updateQuantity(backendId, change) {
+      const item = cartItems.find(i => i.__backendId === backendId);
+      if (!item) return;
+
+      const newQty = item.quantity + change;
+     
+      if (newQty <= 0) {
+        const result = await window.dataSdk.delete(item);
+        if (!result.isOk) {
+          showToast('Erro ao remover item');
+        }
+      } else {
+        const result = await window.dataSdk.update({
+          ...item,
+          quantity: newQty
+        });
+        if (!result.isOk) {
+          showToast('Erro ao atualizar quantidade');
+        }
+      }
+      renderProducts();
+    }
+
+    async function removeFromCart(backendId) {
+      const item = cartItems.find(i => i.__backendId === backendId);
+      if (!item) return;
+
+      const result = await window.dataSdk.delete(item);
+      if (!result.isOk) {
+        showToast('Erro ao remover item');
+      }
+      renderProducts();
+    }
+
+    function updateCartUI() {
+      const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+      const countBadge = document.getElementById('cart-count');
+     
+      if (totalItems > 0) {
+        countBadge.textContent = totalItems;
+        countBadge.classList.remove('hidden');
+      } else {
+        countBadge.classList.add('hidden');
+      }
+
+      // Update cart panel
+      const emptyCart = document.getElementById('empty-cart');
+      const cartItemsList = document.getElementById('cart-items-list');
+      const cartFooter = document.getElementById('cart-footer');
+
+      if (cartItems.length === 0) {
+        emptyCart.classList.remove('hidden');
+        cartItemsList.innerHTML = '';
+        cartFooter.classList.add('hidden');
+      } else {
+        emptyCart.classList.add('hidden');
+        cartFooter.classList.remove('hidden');
+
+        let subtotal = 0;
+        cartItemsList.innerHTML = cartItems.map(item => {
+          const product = products.find(p => p.id === item.product_id);
+          if (!product) return '';
+         
+          const itemTotal = product.price * item.quantity;
+          subtotal += itemTotal;
+
+          return `
+            <div class="flex gap-4 p-4 bg-slate-50 rounded-xl">
+              <div class="w-16 h-16 bg-slate-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span class="text-3xl">${product.emoji}</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-medium text-slate-800 truncate">${product.name}</h4>
+                <p class="text-emerald-600 font-semibold">R$ ${product.price.toFixed(2).replace('.', ',')}</p>
+                <div class="flex items-center gap-3 mt-2">
+                  <button onclick="updateQuantity('${item.__backendId}', -1)" class="w-8 h-8 bg-white rounded-full shadow flex items-center justify-center hover:bg-slate-100">−</button>
+                  <span class="font-medium">${item.quantity}</span>
+                  <button onclick="updateQuantity('${item.__backendId}', 1)" class="w-8 h-8 bg-white rounded-full shadow flex items-center justify-center hover:bg-slate-100">+</button>
+                </div>
+              </div>
+              <button onclick="removeFromCart('${item.__backendId}')" class="text-slate-400 hover:text-red-500 self-start">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          `;
+        }).join('');
+
+        document.getElementById('cart-subtotal').textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').textContent = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+     
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2500);
+    }
+
+    function setupEventListeners() {
+      // Cart toggle
+      document.getElementById('cart-btn').addEventListener('click', () => {
+        document.getElementById('cart-overlay').classList.remove('hidden');
+      });
+
+      document.getElementById('close-cart').addEventListener('click', () => {
+        document.getElementById('cart-overlay').classList.add('hidden');
+      });
+
+      document.getElementById('cart-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'cart-overlay') {
+          document.getElementById('cart-overlay').classList.add('hidden');
+        }
+      });
+
+      // Category filters
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentCategory = btn.dataset.category;
+          document.querySelectorAll('.category-btn').forEach(b => {
+            b.classList.remove('bg-emerald-500', 'text-white');
+            b.classList.add('bg-slate-100', 'text-slate-700');
+          });
+          btn.classList.remove('bg-slate-100', 'text-slate-700');
+          btn.classList.add('bg-emerald-500', 'text-white');
+          renderProducts();
+        });
+      });
+
+      // Search
+      document.getElementById('search-input').addEventListener('input', (e) => {
+        searchTerm = e.target.value;
+        renderProducts();
+      });
+
+      // Checkout button
+      document.getElementById('checkout-btn').addEventListener('click', () => {
+        showToast('Redirecionando para pagamento... 💳');
+      });
+    }
+
+    // Initialize
+    initApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d6852ae137f5448',t:'MTc3MjUzNzU3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
